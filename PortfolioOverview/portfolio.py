@@ -11,6 +11,7 @@ class Portfolio():
     def __init__(self, portfolio_owner):
         self.portfolio_owner = portfolio_owner
         self.portfolios = self.load_portfolios()
+        self.update_prices()
         if portfolio_owner in self.portfolios:
             self.stocks = df = pd.DataFrame(self.portfolios[portfolio_owner])
             print('Portfolio loaded.')
@@ -44,19 +45,24 @@ class Portfolio():
             f.close()
         return
     
-    def update_prices(self, ticker):
-        querystring = {"symbol":ticker,"interval":"1day","outputsize":"1","format":"json"}
+    def update_prices(self):
+        for i in self.portfolios:
+            for j in self.portfolios[i]:
+                querystring = {"symbol":j['Ticker'],"interval":"1day","outputsize":"1","format":"json"}
 
-        headers = {
-            "X-RapidAPI-Key": "61d11dfc19msh8f1adb96bd2e05ep1030d1jsn073be1c1af0e",
-            "X-RapidAPI-Host": "twelve-data1.p.rapidapi.com"
-        }
+                headers = {
+                    "X-RapidAPI-Key": "61d11dfc19msh8f1adb96bd2e05ep1030d1jsn073be1c1af0e",
+                    "X-RapidAPI-Host": "twelve-data1.p.rapidapi.com"
+                }
 
-        response = requests.get(url, headers=headers, params=querystring)
+                response = requests.get(url, headers=headers, params=querystring)
 
-        dict = response.json()
-        
-        return float(dict['values'][0]['close'])
+                dict = response.json()
+                j['Price'] = float(dict['values'][0]['close'])
+                with open('data.json', 'w') as f:
+                    json.dump(self.portfolios, f)
+                    f.close()
+        return
 
 
     
