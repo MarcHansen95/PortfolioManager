@@ -7,6 +7,13 @@ import requests
 url = "https://twelve-data1.p.rapidapi.com/time_series"
 
 
+# An object acts as a connection to all the portfolios, 
+# but each object is connected to a specific portfolio. 
+# So when you add or delete stocks, it will only be in 
+# the portfolio owned by the owner in the object
+
+
+
 class Portfolio():
     def __init__(self, portfolio_owner):
         self.portfolio_owner = portfolio_owner
@@ -45,23 +52,37 @@ class Portfolio():
             f.close()
         return
     
+    def delete_stock(self, ticker):
+        new_port = []
+        for i in self.portfolios[self.portfolio_owner]:
+            if [i][0]['Ticker'] != ticker:
+                new_port.append([i][0])
+        self.portfolios[self.portfolio_owner] = new_port
+        with open('data.json', 'w') as f:
+            json.dump(self.portfolios, f)
+            f.close()
+        return
+    
     def update_prices(self):
         for i in self.portfolios:
             for j in self.portfolios[i]:
-                querystring = {"symbol":j['Ticker'],"interval":"1day","outputsize":"1","format":"json"}
+                # querystring = {"symbol":j['Ticker'],"interval":"1day","outputsize":"1","format":"json"}
 
-                headers = {
-                    "X-RapidAPI-Key": "61d11dfc19msh8f1adb96bd2e05ep1030d1jsn073be1c1af0e",
-                    "X-RapidAPI-Host": "twelve-data1.p.rapidapi.com"
-                }
+                # headers = {
+                #     "X-RapidAPI-Key": "61d11dfc19msh8f1adb96bd2e05ep1030d1jsn073be1c1af0e",
+                #     "X-RapidAPI-Host": "twelve-data1.p.rapidapi.com"
+                # }
 
-                response = requests.get(url, headers=headers, params=querystring)
+                # response = requests.get(url, headers=headers, params=querystring)
 
-                dict = response.json()
-                j['Price'] = float(dict['values'][0]['close'])
+                # dict = response.json()
+                # j['Price'] = float(dict['values'][0]['close'])
+                j['Price'] = 49
                 with open('data.json', 'w') as f:
                     json.dump(self.portfolios, f)
                     f.close()
+        return
+    def update_weights(self):
         return
 
 
