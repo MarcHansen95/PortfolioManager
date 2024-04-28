@@ -1,9 +1,17 @@
 import streamlit as st
 import pandas as pd
 from PortfolioOverview.portfolio import Portfolio
+import plotly.express as px
 
+st.set_page_config(layout="wide")
 
-
+st.markdown("""
+<style>
+.big-font {
+    font-size:300px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 
 st.write("""
@@ -25,19 +33,19 @@ with st.sidebar:
 
 
 if owner != "Select a portfolio":
-    st.header("Stocks of " + owner, anchor=None)
-
+    st.header("Stocks of " + owner, anchor=None,divider='rainbow')
+    col1, col2 = st.columns((2,1))
     a =  Portfolio(owner) 
     df = pd.DataFrame(a.stocks)
-    st.dataframe(df)
-
-
+    with col1: 
+        st.dataframe(df)
 
 
     a = Portfolio(owner)
     
-    st.bar_chart(data=a.stocks["Weight"], x = ["Hej", "dsd", "sd"], y=None, width=0, height=0, use_container_width=True)
-
+    fig = px.bar(df, x="Ticker", y="Weight", title="Portfolio")
+    with col2:
+        st.plotly_chart(fig, use_container_width=True)
 
     
 

@@ -82,7 +82,10 @@ class Portfolio():
                     json.dump(self.portfolios, f)
                     f.close()
         return
+    
     def update_weights(self):
+        port_value = self.stocks['Value'].sum()
+        self.stocks['Value'] = self.stocks['Value']/port_value
         return
 
 
